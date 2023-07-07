@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.model.Cliente;
 import com.example.demo.service.IClienteService;
 
@@ -19,9 +22,10 @@ public class ClienteController {
 	@Autowired private IClienteService clienteService;
 	
 	@GetMapping("/listar")
-	public String index(Model model) {
-		List<Cliente> c = clienteService.listadoClientes();
-		model.addAttribute("clientes", c);
+	public String index(Model model,@RequestParam(required = false, defaultValue = "0") Integer page) {
+		Page<Cliente> pg= clienteService.listarPaginado(PageRequest.of(page, 5));
+		model.addAttribute("clientes", pg);
+		model.addAttribute("paginacion", "/cliente/listar");
 		return "cliente/index";
 	}
 	
